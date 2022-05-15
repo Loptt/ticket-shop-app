@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+{% block head %}
+	<title>{{user.username}}</title>
+{% endblock%}
+{% block body %}
+<br>
+	<h1>{{ user.username }}</h1>
+	<br><br>
+	<h5>Correo: {{ user.email }}</h5>
+	<br>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+{% block head %}
+	<title>Login</title>
+{% endblock%}
+{% block body %}
+<br>
+<form method="POST">
+	{{ form.hidden_tag() }}
+	{{ form.email.label(class='form-label') }}
+	{{ form.email(class='form-control') }}
+	<br>
+	{{ form.password.label(class='form-label') }}
+	{{ form.password(class='form-control') }}
+	<br>
+	{{ form.recuerdame() }}
+	{{ form.recuerdame.label(class='form-label') }}
+	<br><br>
+	{{ form.submit(class='btn btn-success') }}
+</form>
+<br>
+<a href="{{ url_for('register') }}"><button type="button" class="btn btn-primary">O regístrate</button></a>
+{% endblock %}
