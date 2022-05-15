@@ -18,22 +18,22 @@ class User(db.Model, UserMixin):
 	password = db.Column(db.String(25), nullable=False)
 
 
-class Administrador(db.Model):
-	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+class Administrador(User):
+	id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
 
 
-class Organizador(db.Model):
-	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+class Organizador(User):
+	id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
 
 
-class Comprador(db.Model):
-	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+class Comprador(User):
+	id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
 
 
 class Factory:
-	def makeUsuario(self, tipo, username, email, password):
+	def makeUsuario(self, tipo, nombre, username, email, password):
 		if tipo == "Administrador" or tipo == "Organizador" or tipo == "Comprador":
-			return eval(tipo)(username=username, email=email, password=password)
+			return eval(tipo)(username=username, email=email, password=password, nombre=nombre)
 
 
 class Evento(db.Model):
