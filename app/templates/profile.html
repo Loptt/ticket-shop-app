@@ -8,4 +8,15 @@
 	<br><br>
 	<h5>Correo: {{ user.email }}</h5>
 	<br>
+	<h5>Tipo: {{ user.tipo }}</h5>
+	<br>
+<br>
+
+{% if user.tipo == "Organizador" %}
+	<a href="{{ url_for('nuevo_evento') }}" class="button">Crear evento</a>
+	<h1>Eventos</h1>
+	{% for evento in user.eventos %}
+		<h5>{{ evento.nombre }}</h5>
+	{% endfor %}
+{% endif %}
 {% endblock %}

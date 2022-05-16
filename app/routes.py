@@ -44,11 +44,35 @@ def login():
 	return render_template('login.html', form=form)
 
 
+@app.route('/evento/nuevo', methods=['GET', 'POST'])
+@login_required
+def nuevo_evento():
+	if current_user.tipo != "Organizador":
+		abort(403)
+	form = EventoForm()
+	if form.validate_on_submit():
+		factory = eval(form.modalidad.data + "Factory")()
+		evento = factory.makeEvento(form.nombre.data, form.descripcion.data, form.fecha.data, form.ubicacion.data if form.modalidad.data == "Presencial" else form.sala_virtual.data, current_user)
+		db.session.add(evento)
+		db.session.commit()
+		return redirect(url_for('evento', evento_id=evento.id))
+	else:
+		print(form.errors)
+	return render_template('nuevo_evento.html', form=form)
+
+
+@app.route('/evento/<int:evento_id>')
+@login_required
+def evento(evento_id):
+	evento = Evento.query.filter_by(id=evento_id).first_or_404()
+	return render_template('evento.html', evento=evento)
+
+
 @app.route('/user/<username>')
 @login_required
 def profile(username):
 	user = User.query.filter_by(username=username).first_or_404()
-	return render_template('profile.html', user=user, username=current_user.username)
+	return render_template('profile.html', user=user)
 
 
 @app.route('/logout')

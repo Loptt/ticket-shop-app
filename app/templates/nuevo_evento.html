@@ -1,0 +1,41 @@
+{% extends 'layout.html' %}
+{% block head %}
+	<title>Nuevo evento</title>
+{% endblock%}
+{% block body %}
+<br>
+<form method="POST">
+	{{ form.hidden_tag() }}
+	<div class="form-group">
+		{{ form.nombre.label() }}
+		{{ form.nombre(class='form-control') }}
+	</div>
+	<br>
+	<div class="form-group">
+		{{ form.descripcion.label() }}
+		{{ form.descripcion(class='form-control') }}
+	</div>
+	<br>
+	<div class="form-group">
+		{{ form.modalidad.label() }}
+		{{ form.modalidad(class='form-control') }}
+	</div>
+	<br>
+	<div class="form-group">
+		{{ form.ubicacion.label() }}
+		{{ form.ubicacion(class='form-control') }}
+	</div>
+	<br>
+	<div class="form-group">
+		{{ form.sala_virtual.label() }}
+		{{ form.sala_virtual(class='form-control') }}
+	</div>
+	<br>
+	<div class="form-group">
+		{{ form.fecha.label() }}
+		{{ form.fecha(class='form-control') }}
+	</div>
+	<br>
+	{{ form.submit(class="btn btn-info") }}
+</form>
+{% endblock %}

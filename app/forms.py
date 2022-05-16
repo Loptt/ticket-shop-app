@@ -48,9 +48,11 @@ class LoginForm(FlaskForm):
 	submit = SubmitField('Iniciar sesión')
 
 
-class EventForm(FlaskForm):
+class EventoForm(FlaskForm):
 	nombre = StringField('Nombre', validators=[DataRequired()])
 	descripcion = TextAreaField('Contenido', validators=[DataRequired()])
-	ubicacion = StringField('Ubicación', validators=[DataRequired()])
-	fecha = DateField('Fecha', format='%m/%d/%Y')
+	modalidad = SelectField('Modalidad', choices=[('Presencial', 'Presencial'), ('Virtual', 'Virtual')])
+	ubicacion = StringField('Ubicación (solo para presencial)') # TODO: Esconder estos dependiendo si es virtual o presencial
+	sala_virtual = StringField('Sala virtual (solo para virtual)')
+	fecha = DateField('Fecha')
 	submit = SubmitField('Crear evento')
