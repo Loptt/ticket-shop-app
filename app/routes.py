@@ -10,7 +10,8 @@ import secrets
 @app.route('/')
 @login_required
 def home():
-	return render_template('index.html', username=current_user.username)
+	events = Evento.query.all()
+	return render_template('index.html', username=current_user.username, events=events)
 
 
 @app.route('/register', methods=['GET', 'POST'])
