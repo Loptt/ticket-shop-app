@@ -4,6 +4,15 @@
 {% endblock%}
 {% block body %}
 <br>
-	<h1>Flask</h1>
+	<h1>Eventos cerca de mi</h1>
+	<div class="event-list">
+		{% for evento in events %}
+			<div class="event-summary">
+				<h3><a href="{{ url_for('evento', evento_id=evento.id) }}">{{ evento.nombre }}</a></h3>
+				<p>{{ evento.descripcion }}</p>
+				<h6>Creado por: <a href="{{ url_for('profile', username=evento.organizador.username) }}">{{ evento.organizador.nombre }}</a></h3>
+			</div>
+		{% endfor %}
+	</div>
 <br>
 {% endblock %}
