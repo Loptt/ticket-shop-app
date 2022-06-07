@@ -73,17 +73,48 @@ class Boleto(db.Model):
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
 	evento_id = db.Column(db.Integer, db.ForeignKey('evento_virtual.id'), primary_key=True)
 	fecha_compra = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+	boleto_impl = None
+
+	@abstractmethod
+	def mostrarAcceso(self):
+		pass
 
 
 class BoletoVirtual(Boleto):
 	id = db.Column(db.Integer, db.ForeignKey('boleto.id'), primary_key=True)
 	link = db.Column(db.String(320), nullable=False)
 
+	def mostrarAcceso(self):
+		datos = self.boleto_impl.mostrarAccesoDev()
+		return self.generarLink(datos)
+
+	def generarLink(self, datos):
+		return "zoom.us/123456789"
+
 
 class BoletoPresencial(Boleto):
 	id = db.Column(db.Integer, db.ForeignKey('boleto.id'), primary_key=True)
 	qr_entrada = db.Column(db.String(20), nullable=False)
 
+	def mostrarAcceso(self):
+		datos = self.boleto_impl.mostrarAccesoDev()
+		return self.generarQREntrada(datos)
+	
+	def generarQREntrada(self, datos):
+		return f"QR {datos}"
+
+class BoletoImpl(metaclass=ABCMeta):
+	@abstractmethod
+	def mostrarAccesoDev(self):
+		pass
+
+class BoletoGeneralImpl(BoletoImpl):
+	def mostrarAccesoDev(self):
+		return "General"
+
+class BoletoVIPImpl(BoletoImpl):
+	def mostrarAccesoDev(self):
+		return "VIP"
 
 class AbstractFactory(metaclass=ABCMeta):
 	@abstractmethod
