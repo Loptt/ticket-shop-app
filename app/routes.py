@@ -6,6 +6,7 @@ from flask_login import login_user, current_user, logout_user, login_required
 import os
 import secrets
 
+carritos = {}
 
 @app.route('/')
 @login_required
@@ -89,6 +90,22 @@ def comprar_boleto(evento_id):
 	db.session.add(boleto_impl)
 	db.session.commit()
 	return redirect(url_for('evento', evento_id=evento.id))
+
+@app.route('/carrito/agregar/<int:evento_id>', methods=['POST'])
+@login_required
+def agregar_carrito(evento_id):
+	# tipo = request.form["comprar"]
+	# if tipo != "General" and tipo != "VIP":
+	# 	abort(404)
+	# evento = Evento.query.filter_by(id=evento_id).first_or_404()
+	# evento = EventoVirtual.query.filter_by(id=evento_id).first() if evento.tipo == "Virtual" else EventoPresencial.query.filter_by(id=evento_id).first()
+	# factory = eval(evento.tipo + "Factory")()
+	# boleto = factory.makeBoleto(current_user, evento)
+	# db.session.add(boleto)
+	# boleto_impl = eval("Boleto" + tipo + "Impl")(boleto_id=boleto.id)
+	# db.session.add(boleto_impl)
+	# db.session.commit()
+	# return redirect(url_for('evento', evento_id=evento.id))
 
 
 @app.route('/user/<username>')

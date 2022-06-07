@@ -86,8 +86,9 @@ class EventoPresencial(Evento):
 class Boleto(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-	evento_id = db.Column(db.Integer, db.ForeignKey('evento_virtual.id'))
+	evento_id = db.Column(db.Integer, db.ForeignKey('evento.id'))
 	fecha_compra = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+	comprado = db.Column(db.Integer) # Booleano
 
 	@abstractmethod
 	def mostrarAcceso(self):
@@ -165,7 +166,7 @@ class AbstractFactory(metaclass=ABCMeta):
 
 class VirtualFactory(AbstractFactory):
 	def makeBoleto(self, user, evento):
-		return BoletoVirtual(user_id=user.id, evento_id=evento.id, link=evento.sala_virtual) # Generar link de alguna forma
+		return BoletoVirtual(user_id=user.id, evento_id=evento.id, link=evento.sala_virtual, comprado=0) # Generar link de alguna forma
 
 	def makeEvento(self, nombre, descripcion, fecha, sala_virtual, user, precio_general, precio_vip):
 		return EventoVirtual(nombre=nombre, descripcion=descripcion, fecha=fecha, sala_virtual=sala_virtual, user_id=user.id, precio_general=precio_general, precio_vip=precio_vip)
@@ -173,37 +174,40 @@ class VirtualFactory(AbstractFactory):
 
 class PresencialFactory(AbstractFactory):
 	def makeBoleto(self, user, evento):
-		return BoletoPresencial(user_id=user.id, evento_id=evento.id, qr_entrada="") # Generar QR de alguna forma
+		return BoletoPresencial(user_id=user.id, evento_id=evento.id, qr_entrada="", comprado=0) # Generar QR de alguna forma
 
 	def makeEvento(self, nombre, descripcion, fecha, ubicacion, user, precio_general, precio_vip):
 		return EventoPresencial(nombre=nombre, descripcion=descripcion, fecha=fecha, ubicacion=ubicacion, user_id=user.id,  precio_general=precio_general, precio_vip=precio_vip)
+
 class Carrito():
 	boletos = []
-	def set_memento(self,boletos):
-		boletos = boletos
+	def set_memento(self, carrito_memento):
+		self.boletos = carrito_memento.state.copy()
 		pass
 	
 	def create_memento(self,boletos):
-		boletos = boletos
-		pass
+		return CarritoMemento(self)
 
 class CarritoMemento():
-	state = Carrito
+	state = None
+
+	def __init__(self, carrito):
+		state = carrito.boletos
 
 class CarritoManager():
 	carrito = Carrito
 	carrito_memento = CarritoMemento
 
 	def agregar(self,boleto):
-		self.carrito_memento.state = self.carrito
+		self.carrito.set_memento(self.carrito_memento)
 		self.carrito.boletos.append(boleto)
 	
 	def elminar(self,boleto):
-		self.carrito_memento.state = self.carrito
+		self.carrito.set_memento(self.carrito_memento)
 		self.carrito.boletos.remove(boleto)
 	
 	def undo(self):
-		self.carrito = self.carrito_memento.state
+		self.carrito.boletos = self.carrito_memento.state
 		
 	def vaciar(self):
 		self.carrito.boletos = []
