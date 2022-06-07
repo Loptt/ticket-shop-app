@@ -53,7 +53,7 @@ def nuevo_evento():
 	form = EventoForm()
 	if form.validate_on_submit():
 		factory = eval(form.modalidad.data + "Factory")()
-		evento = factory.makeEvento(form.nombre.data, form.descripcion.data, form.fecha.data, form.ubicacion.data if form.modalidad.data == "Presencial" else form.sala_virtual.data, current_user)
+		evento = factory.makeEvento(form.nombre.data, form.descripcion.data, form.fecha.data, form.ubicacion.data if form.modalidad.data == "Presencial" else form.sala_virtual.data, current_user, form.precio_general.data, form.precio_vip.data)
 		db.session.add(evento)
 		db.session.commit()
 		return redirect(url_for('evento', evento_id=evento.id))

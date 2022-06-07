@@ -52,6 +52,8 @@ class Evento(db.Model):
 	descripcion = db.Column(db.Text)
 	fecha = db.Column(db.DateTime, nullable=False)
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+	precio_general = db.Column(db.Float)
+	precio_vip = db.Column(db.Float)
 
 	@hybrid_property
 	def organizador(self):
@@ -73,7 +75,7 @@ class Boleto(db.Model):
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
 	evento_id = db.Column(db.Integer, db.ForeignKey('evento_virtual.id'), primary_key=True)
 	fecha_compra = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-	boleto_impl = None
+	boleto_impl = None # Se debe de instanciar con una clase concreta cuando se cree el boleto
 
 	@abstractmethod
 	def mostrarAcceso(self):
@@ -130,13 +132,13 @@ class VirtualFactory(AbstractFactory):
 	def makeBoleto(self, user, evento):
 		return BoletoVirtual(user_id=user.id, evento_id=evento.id, link="") # Generar link de alguna forma
 
-	def makeEvento(self, nombre, descripcion, fecha, sala_virtual, user):
-		return EventoVirtual(nombre=nombre, descripcion=descripcion, fecha=fecha, sala_virtual=sala_virtual, user_id=user.id)
+	def makeEvento(self, nombre, descripcion, fecha, sala_virtual, user, precio_general, precio_vip):
+		return EventoVirtual(nombre=nombre, descripcion=descripcion, fecha=fecha, sala_virtual=sala_virtual, user_id=user.id, precio_general=precio_general, precio_vip=precio_vip)
 
 
 class PresencialFactory(AbstractFactory):
 	def makeBoleto(self, user, evento):
 		return BoletoPresencial(user_id=user.id, evento_id=evento.id, qr_entrada="") # Generar QR de alguna forma
 
-	def makeEvento(self, nombre, descripcion, fecha, ubicacion, user):
-		return EventoPresencial(nombre=nombre, descripcion=descripcion, fecha=fecha, ubicacion=ubicacion, user_id=user.id)
+	def makeEvento(self, nombre, descripcion, fecha, ubicacion, user, precio_general, precio_vip):
+		return EventoPresencial(nombre=nombre, descripcion=descripcion, fecha=fecha, ubicacion=ubicacion, user_id=user.id,  precio_general=precio_general, precio_vip=precio_vip)

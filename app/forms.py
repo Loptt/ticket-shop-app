@@ -54,5 +54,7 @@ class EventoForm(FlaskForm):
 	modalidad = SelectField('Modalidad', choices=[('Presencial', 'Presencial'), ('Virtual', 'Virtual')])
 	ubicacion = StringField('Ubicación (solo para presencial)') # TODO: Esconder estos dependiendo si es virtual o presencial
 	sala_virtual = StringField('Sala virtual (solo para virtual)')
+	precio_general = StringField('Precio para boleto general')
+	precio_vip = StringField('Precio para boleto VIP')
 	fecha = DateField('Fecha')
 	submit = SubmitField('Crear evento')
