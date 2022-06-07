@@ -177,3 +177,36 @@ class PresencialFactory(AbstractFactory):
 
 	def makeEvento(self, nombre, descripcion, fecha, ubicacion, user, precio_general, precio_vip):
 		return EventoPresencial(nombre=nombre, descripcion=descripcion, fecha=fecha, ubicacion=ubicacion, user_id=user.id,  precio_general=precio_general, precio_vip=precio_vip)
+class Carrito():
+	boletos = []
+	def set_memento(self,boletos):
+		boletos = boletos
+		pass
+	
+	def create_memento(self,boletos):
+		boletos = boletos
+		pass
+
+class CarritoMemento():
+	state = Carrito
+
+class CarritoManager():
+	carrito = Carrito
+	carrito_memento = CarritoMemento
+
+	def agregar(self,boleto):
+		self.carrito_memento.state = self.carrito
+		self.carrito.boletos.append(boleto)
+	
+	def elminar(self,boleto):
+		self.carrito_memento.state = self.carrito
+		self.carrito.boletos.remove(boleto)
+	
+	def undo(self):
+		self.carrito = self.carrito_memento.state
+		
+	def vaciar(self):
+		self.carrito.boletos = []
+	
+	def comprar(self):
+		pass
