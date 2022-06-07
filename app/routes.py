@@ -66,7 +66,29 @@ def nuevo_evento():
 @login_required
 def evento(evento_id):
 	evento = Evento.query.filter_by(id=evento_id).first_or_404()
-	return render_template('evento.html', evento=evento)
+	boleto = Boleto.query.filter_by(user_id=current_user.id, evento_id=evento.id).first()
+	if boleto:
+		boleto = BoletoVirtual.query.filter_by(id=boleto.id).first() if boleto.tipo == "Virtual" else BoletoPresencial.query.filter_by(id=boleto.id).first()
+	else:
+		boleto = None
+	return render_template('evento.html', evento=evento, boleto=boleto)
+
+
+@app.route('/evento/<int:evento_id>/comprar', methods=['POST'])
+@login_required
+def comprar_boleto(evento_id):
+	tipo = request.form["comprar"]
+	if tipo != "General" and tipo != "VIP":
+		abort(404)
+	evento = Evento.query.filter_by(id=evento_id).first_or_404()
+	evento = EventoVirtual.query.filter_by(id=evento_id).first() if evento.tipo == "Virtual" else EventoPresencial.query.filter_by(id=evento_id).first()
+	factory = eval(evento.tipo + "Factory")()
+	boleto = factory.makeBoleto(current_user, evento)
+	db.session.add(boleto)
+	boleto_impl = eval("Boleto" + tipo + "Impl")(boleto_id=boleto.id)
+	db.session.add(boleto_impl)
+	db.session.commit()
+	return redirect(url_for('evento', evento_id=evento.id))
 
 
 @app.route('/user/<username>')

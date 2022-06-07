@@ -19,4 +19,11 @@
 		<h5>{{ evento.nombre }}</h5>
 	{% endfor %}
 {% endif %}
+<br>
+	<h1>Tus boletos</h1>
+	{% for boleto in user.boletos %}
+		<h5>{{ boleto.evento.nombre }}</h5>
+		<h5>{{ boleto.mostrarAcceso() }}</h5>
+		<br>
+	{% endfor %}
 {% endblock %}

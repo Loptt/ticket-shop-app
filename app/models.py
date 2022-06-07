@@ -27,6 +27,12 @@ class User(db.Model, UserMixin):
 		elif Organizador.query.filter_by(id=self.id).first():
 			return "Organizador"
 
+	@hybrid_property
+	def boletos(self):
+		boletos = BoletoVirtual.query.filter_by(user_id=self.id)
+		boletos = BoletoPresencial.query.filter_by(user_id=self.id) if len(list(boletos)) == 0 else boletos
+		return boletos
+
 
 class Administrador(User):
 	id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
@@ -59,6 +65,13 @@ class Evento(db.Model):
 	def organizador(self):
 		return User.query.filter_by(id=self.user_id).first()
 
+	@hybrid_property
+	def tipo(self):
+		if EventoVirtual.query.filter_by(id=self.id).first():
+			return "Virtual"
+		if EventoPresencial.query.filter_by(id=self.id).first():
+			return "Presencial"
+
 
 class EventoVirtual(Evento):
 	id = db.Column(db.Integer, db.ForeignKey('evento.id'), primary_key=True)
@@ -72,14 +85,29 @@ class EventoPresencial(Evento):
 
 class Boleto(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
-	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-	evento_id = db.Column(db.Integer, db.ForeignKey('evento_virtual.id'), primary_key=True)
+	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+	evento_id = db.Column(db.Integer, db.ForeignKey('evento_virtual.id'))
 	fecha_compra = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-	boleto_impl = None # Se debe de instanciar con una clase concreta cuando se cree el boleto
 
 	@abstractmethod
 	def mostrarAcceso(self):
 		pass
+
+	@hybrid_property
+	def boleto_impl(self):
+		boleto = BoletoGeneralImpl.query.filter_by(id=self.id).first()
+		return BoletoVIPImpl.query.filter_by(id=self.id).first() if boleto is None else boleto
+
+	@hybrid_property
+	def tipo(self):
+		if BoletoVirtual.query.filter_by(id=self.id).first():
+			return "Virtual"
+		if BoletoPresencial.query.filter_by(id=self.id).first():
+			return "Presencial"
+
+	@hybrid_property
+	def evento(self):
+		return Evento.query.filter_by(id=self.evento_id).first()
 
 
 class BoletoVirtual(Boleto):
@@ -105,16 +133,23 @@ class BoletoPresencial(Boleto):
 	def generarQREntrada(self, datos):
 		return f"QR {datos}"
 
-class BoletoImpl(metaclass=ABCMeta):
+class BoletoImpl(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	boleto_id = db.Column(db.Integer, db.ForeignKey('boleto.id'))
+
 	@abstractmethod
 	def mostrarAccesoDev(self):
 		pass
 
 class BoletoGeneralImpl(BoletoImpl):
+	id = db.Column(db.Integer, db.ForeignKey('boleto_impl.id'), primary_key=True)
+
 	def mostrarAccesoDev(self):
 		return "General"
 
 class BoletoVIPImpl(BoletoImpl):
+	id = db.Column(db.Integer, db.ForeignKey('boleto_impl.id'), primary_key=True)
+
 	def mostrarAccesoDev(self):
 		return "VIP"
 
@@ -130,7 +165,7 @@ class AbstractFactory(metaclass=ABCMeta):
 
 class VirtualFactory(AbstractFactory):
 	def makeBoleto(self, user, evento):
-		return BoletoVirtual(user_id=user.id, evento_id=evento.id, link="") # Generar link de alguna forma
+		return BoletoVirtual(user_id=user.id, evento_id=evento.id, link=evento.sala_virtual) # Generar link de alguna forma
 
 	def makeEvento(self, nombre, descripcion, fecha, sala_virtual, user, precio_general, precio_vip):
 		return EventoVirtual(nombre=nombre, descripcion=descripcion, fecha=fecha, sala_virtual=sala_virtual, user_id=user.id, precio_general=precio_general, precio_vip=precio_vip)
