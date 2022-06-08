@@ -1,3 +1,4 @@
+from calendar import c
 from flask import render_template, url_for, flash, request, send_file, jsonify, redirect, abort
 from app.forms import *
 from app.models import *
@@ -112,6 +113,27 @@ def agregar_carrito(evento_id):
 	carritos[current_user.id].agregar(boleto.id)
 
 	return redirect(url_for('carrito'))
+
+@app.route('/carrito/vaciar', methods=['POST'])
+@login_required
+def vaciar_carrito():
+	if current_user.id not in carritos:
+		carritos[current_user.id] = CarritoManager(carrito=Carrito(), carrito_memento=None)
+	
+	carritos[current_user.id].vaciar()
+
+	return redirect(url_for('carrito'))
+
+@app.route('/carrito/undo', methods=['POST'])
+@login_required
+def undo_carrito():
+	if current_user.id not in carritos:
+		carritos[current_user.id] = CarritoManager(carrito=Carrito(), carrito_memento=None)
+	
+	carritos[current_user.id].undo()
+
+	return redirect(url_for('carrito'))
+
 
 @app.route('/carrito', methods=['GET'])
 @login_required

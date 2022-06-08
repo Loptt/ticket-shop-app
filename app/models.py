@@ -192,7 +192,7 @@ class CarritoMemento():
 	state = None
 
 	def __init__(self, carrito):
-		state = carrito.boletos
+		self.state = carrito.boletos
 
 class CarritoManager():
 	carrito = Carrito
