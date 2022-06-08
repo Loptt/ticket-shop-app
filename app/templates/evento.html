@@ -11,14 +11,10 @@
 	<p>{{ evento.descripcion }}</p>
 	<h6>Creado por: <a href="{{ url_for('profile', username=evento.organizador.username) }}">{{ evento.organizador.nombre }}</a></h3>
 
-	{% if boleto %}
-		<p>Tu boleto es: {{ boleto.mostrarAcceso() }}</p>
-	{% else %}
-		<form action="{{ url_for('comprar_boleto', evento_id=evento.id, tipo='General') }}" method="post">
-		    <button class="btn btn-primary" name="comprar" value="General">Comprar General</button>
-		    <br><br>
-		    <button class="btn btn-primary" name="comprar" value="VIP">Comprar VIP</button>
-		</form>
-	{% endif %}
+	<form action="{{ url_for('agregar_carrito', evento_id=evento.id, tipo='General') }}" method="post">
+		<button class="btn btn-primary" name="comprar" value="General">Agregar a carrito General</button>
+		<br><br>
+		<button class="btn btn-primary" name="comprar" value="VIP">Agergar a carrito VIP</button>
+	</form>
 	
 {% endblock %}

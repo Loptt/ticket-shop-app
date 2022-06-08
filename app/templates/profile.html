@@ -22,8 +22,10 @@
 <br>
 	<h1>Tus boletos</h1>
 	{% for boleto in user.boletos %}
-		<h5>{{ boleto.evento.nombre }}</h5>
-		<h5>{{ boleto.mostrarAcceso() }}</h5>
-		<br>
+		{% if boleto.comprado.data == 1 %}
+			<h5>{{ boleto.evento.nombre }}</h5>
+			<h5>{{ boleto.mostrarAcceso() }}</h5>
+			<br>
+		{% endif %}
 	{% endfor %}
 {% endblock %}

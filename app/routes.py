@@ -94,18 +94,38 @@ def comprar_boleto(evento_id):
 @app.route('/carrito/agregar/<int:evento_id>', methods=['POST'])
 @login_required
 def agregar_carrito(evento_id):
-	# tipo = request.form["comprar"]
-	# if tipo != "General" and tipo != "VIP":
-	# 	abort(404)
-	# evento = Evento.query.filter_by(id=evento_id).first_or_404()
-	# evento = EventoVirtual.query.filter_by(id=evento_id).first() if evento.tipo == "Virtual" else EventoPresencial.query.filter_by(id=evento_id).first()
-	# factory = eval(evento.tipo + "Factory")()
-	# boleto = factory.makeBoleto(current_user, evento)
-	# db.session.add(boleto)
-	# boleto_impl = eval("Boleto" + tipo + "Impl")(boleto_id=boleto.id)
-	# db.session.add(boleto_impl)
-	# db.session.commit()
-	# return redirect(url_for('evento', evento_id=evento.id))
+	tipo = request.form["comprar"]
+	if tipo != "General" and tipo != "VIP":
+		abort(404)
+	evento = Evento.query.filter_by(id=evento_id).first_or_404()
+	evento = EventoVirtual.query.filter_by(id=evento_id).first() if evento.tipo == "Virtual" else EventoPresencial.query.filter_by(id=evento_id).first()
+	factory = eval(evento.tipo + "Factory")()
+	boleto = factory.makeBoleto(current_user, evento)
+	db.session.add(boleto)
+	boleto_impl = eval("Boleto" + tipo + "Impl")(boleto_id=boleto.id)
+	db.session.commit()
+	db.session.add(boleto_impl)
+	if current_user.id not in carritos:
+		carritos[current_user.id] = CarritoManager(carrito=Carrito(), carrito_memento=None)
+
+	db.session.commit()
+	carritos[current_user.id].agregar(boleto.id)
+
+	return redirect(url_for('carrito'))
+
+@app.route('/carrito', methods=['GET'])
+@login_required
+def carrito():
+	if current_user.id not in carritos:
+		carritos[current_user.id] = CarritoManager(carrito=Carrito(), carrito_memento=None)
+	
+	boletos = []
+	for id in carritos[current_user.id].get_boletos():
+		boleto = Boleto.query.filter_by(id=id).first()
+		boleto = BoletoVirtual.query.filter_by(id=id).first() if boleto.tipo == "Virtual" else BoletoPresencial.query.filter_by(id=id).first()
+		boletos.append(boleto)
+
+	return render_template('carrito.html', boletos=boletos)
 
 
 @app.route('/user/<username>')

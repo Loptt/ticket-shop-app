@@ -1,0 +1,16 @@
+{% extends 'layout.html' %}
+{% block head %}
+	<title>Mi Carrito</title>
+{% endblock%}
+{% block body %}
+<br>
+<h1>Mi Carrito</h1>
+	{% for boleto in boletos %}
+        <div class="boleto">
+            <h3>Boleto para: {{ boleto.evento.nombre }}</h3>
+            <p>Modalidad: {{ boleto.evento.tipo }}</p>
+            <p>Tipo: {{ boleto.boleto_impl.mostrarAccesoDev() }}</p>
+        </div>
+    {% endfor %}
+	
+{% endblock %}

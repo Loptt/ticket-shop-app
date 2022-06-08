@@ -185,7 +185,7 @@ class Carrito():
 		self.boletos = carrito_memento.state.copy()
 		pass
 	
-	def create_memento(self,boletos):
+	def create_memento(self):
 		return CarritoMemento(self)
 
 class CarritoMemento():
@@ -198,19 +198,26 @@ class CarritoManager():
 	carrito = Carrito
 	carrito_memento = CarritoMemento
 
+	def __init__(self, carrito, carrito_memento):
+		self.carrito = carrito
+		self.carrito_memento = carrito_memento
+
 	def agregar(self,boleto):
-		self.carrito.set_memento(self.carrito_memento)
+		self.carrito_memento = self.carrito.create_memento()
 		self.carrito.boletos.append(boleto)
 	
 	def elminar(self,boleto):
-		self.carrito.set_memento(self.carrito_memento)
+		self.carrito_memento = self.carrito.create_memento()
 		self.carrito.boletos.remove(boleto)
 	
 	def undo(self):
-		self.carrito.boletos = self.carrito_memento.state
+		self.carrito.set_memento(self.carrito_memento)
 		
 	def vaciar(self):
 		self.carrito.boletos = []
 	
 	def comprar(self):
 		pass
+
+	def get_boletos(self):
+		return self.carrito.boletos
