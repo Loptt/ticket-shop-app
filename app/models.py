@@ -229,3 +229,33 @@ class CarritoManager():
 
 	def get_boletos(self):
 		return self.carrito.boletos
+
+# Dummy payment processor
+class PaymentProcessor:
+	def pay(self, data):
+		print("Processed payment for ", data)
+
+# Dummy logger
+class Logger:
+	def log(self, data):
+		print(f"{datetime.now()}: {data}")
+
+class Command(metaclass=ABCMeta):
+	@abstractmethod
+	def execute(self, data):
+		pass
+
+class ProcessPaymentCommand(Command):
+	def __init__(self, payment_processor):
+		self.payment_processor = payment_processor
+
+	def execute(self, data):
+		self.payment_processor.pay(data)
+
+class LogTransactionCommand(Command):
+	def __init__(self, logger):
+		self.logger = logger
+	
+	def execute(self, data):
+		self.logger.log(data)
+		

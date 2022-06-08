@@ -98,8 +98,16 @@ def comprar_boleto(evento_id):
 def comprar_carrito():
 	if current_user.id not in carritos:
 		carritos[current_user.id] = CarritoManager(carrito=Carrito(), carrito_memento=None)
+
+	commands = []
+
+	commands.append(ProcessPaymentCommand(PaymentProcessor()))
+	commands.append(LogTransactionCommand(Logger()))
 	
 	carritos[current_user.id].comprar(db.session)
+	
+	for command in commands:
+		command.execute(current_user.username)
 
 	return redirect(url_for('profile', username=current_user.username))
 
