@@ -117,11 +117,11 @@ class BoletoVirtual(Boleto):
 	link = db.Column(db.String(320), nullable=False)
 
 	def mostrarAcceso(self):
-		datos = self.boleto_impl.mostrarAccesoDev()
-		return self.generarLink(datos)
+		dato = self.boleto_impl.mostrarAccesoDev()
+		return self.generarLink(dato)
 
-	def generarLink(self, datos):
-		return "zoom.us/123456789"
+	def generarLink(self, dato):
+		return f"Boleto {dato}:  {self.link}"
 
 
 class BoletoPresencial(Boleto):
@@ -129,11 +129,11 @@ class BoletoPresencial(Boleto):
 	qr_entrada = db.Column(db.String(20), nullable=False)
 
 	def mostrarAcceso(self):
-		datos = self.boleto_impl.mostrarAccesoDev()
-		return self.generarQREntrada(datos)
+		dato = self.boleto_impl.mostrarAccesoDev()
+		return self.generarQREntrada(dato)
 	
-	def generarQREntrada(self, datos):
-		return f"QR {datos}"
+	def generarQREntrada(self, dato):
+		return f"Boleto QR {dato}"
 
 class BoletoImpl(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
