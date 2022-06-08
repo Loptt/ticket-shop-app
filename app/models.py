@@ -29,8 +29,8 @@ class User(db.Model, UserMixin):
 
 	@hybrid_property
 	def boletos(self):
-		boletos = BoletoVirtual.query.filter_by(user_id=self.id)
-		boletos = BoletoPresencial.query.filter_by(user_id=self.id) if len(list(boletos)) == 0 else boletos
+		boletos = [boleto for boleto in BoletoPresencial.query.filter_by(user_id=self.id)]
+		boletos = boletos + [boleto for boleto in BoletoVirtual.query.filter_by(user_id=self.id)]
 		return boletos
 
 
@@ -182,8 +182,9 @@ class PresencialFactory(AbstractFactory):
 class Carrito():
 	boletos = []
 	def set_memento(self, carrito_memento):
+		if not carrito_memento.state:
+			return
 		self.boletos = carrito_memento.state.copy()
-		pass
 	
 	def create_memento(self):
 		return CarritoMemento(self)
@@ -214,10 +215,17 @@ class CarritoManager():
 		self.carrito.set_memento(self.carrito_memento)
 		
 	def vaciar(self):
+		self.carrito_memento = self.carrito.create_memento()
 		self.carrito.boletos = []
 	
-	def comprar(self):
-		pass
+	def comprar(self, session):
+		for id in self.carrito.boletos:
+			boleto = Boleto.query.filter_by(id=id).first()
+			boleto = BoletoVirtual.query.filter_by(id=id).first() if boleto.tipo == "Virtual" else BoletoPresencial.query.filter_by(id=id).first()
+			boleto.comprado = 1
+			session.commit()
+		
+		self.vaciar()
 
 	def get_boletos(self):
 		return self.carrito.boletos

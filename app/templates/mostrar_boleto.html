@@ -1,0 +1,13 @@
+{% extends 'layout.html' %}
+{% block head %}
+	<title>Mi boleto</title>
+{% endblock%}
+{% block body %}
+<h1>Mi boleto</h1>
+{% if boleto.tipo == "Presencial" %}
+    <p> {{ boleto.mostrarAcceso() }}</p>
+    <img src="https://cdn.ttgtmedia.com/rms/misc/qr_code_barcode.jpg" />
+{% else %}
+    <p>{{ boleto.mostrarAcceso() }}</p>
+{% endif %}
+{% endblock %}

@@ -22,9 +22,11 @@
 <br>
 	<h1>Tus boletos</h1>
 	{% for boleto in user.boletos %}
-		{% if boleto.comprado.data == 1 %}
+		{% if boleto.comprado == 1 %}
 			<h5>{{ boleto.evento.nombre }}</h5>
-			<h5>{{ boleto.mostrarAcceso() }}</h5>
+			<form action="{{ url_for('mostrar_boleto', boleto_id=boleto.id) }}" method="get">
+				<button class="btn btn-primary" name="comprar">Mostrar acceso</button>
+			</form>
 			<br>
 		{% endif %}
 	{% endfor %}

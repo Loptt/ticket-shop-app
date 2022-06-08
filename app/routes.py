@@ -92,6 +92,19 @@ def comprar_boleto(evento_id):
 	db.session.commit()
 	return redirect(url_for('evento', evento_id=evento.id))
 
+
+@app.route('/carrito/comprar', methods=['POST'])
+@login_required
+def comprar_carrito():
+	if current_user.id not in carritos:
+		carritos[current_user.id] = CarritoManager(carrito=Carrito(), carrito_memento=None)
+	
+	carritos[current_user.id].comprar(db.session)
+
+	return redirect(url_for('profile', username=current_user.username))
+
+
+
 @app.route('/carrito/agregar/<int:evento_id>', methods=['POST'])
 @login_required
 def agregar_carrito(evento_id):
@@ -148,6 +161,14 @@ def carrito():
 		boletos.append(boleto)
 
 	return render_template('carrito.html', boletos=boletos)
+
+@app.route('/boleto/mostrar/<int:boleto_id>', methods=['GET'])
+@login_required
+def mostrar_boleto(boleto_id):
+	boleto = Boleto.query.filter_by(id=boleto_id).first()
+	boleto = BoletoVirtual.query.filter_by(id=boleto_id).first() if boleto.tipo == "Virtual" else BoletoPresencial.query.filter_by(id=boleto_id).first()
+
+	return render_template('mostrar_boleto.html', boleto=boleto)
 
 
 @app.route('/user/<username>')

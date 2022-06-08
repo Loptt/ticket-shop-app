@@ -13,12 +13,15 @@
         </div>
     {% endfor %}
 
-    <form action="{{ url_for('vaciar_carrito') }}" method="post">
+  <form action="{{ url_for('vaciar_carrito') }}" method="post">
 		<button class="btn btn-primary" name="vaciar" value="vaciar">Vaciar carrito</button>
 	</form>
-    <br>
-    <form action="{{ url_for('undo_carrito') }}" method="post">
+  <br>
+  <form action="{{ url_for('undo_carrito') }}" method="post">
 		<button class="btn btn-primary" name="undo" value="undo">Undo carrito</button>
+	</form>
+  <form action="{{ url_for('comprar_carrito') }}" method="post">
+		<button class="btn btn-primary" name="undo" value="undo">Comprar boletos en carrito</button>
 	</form>
 	
 {% endblock %}
