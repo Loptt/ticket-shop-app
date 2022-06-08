@@ -183,26 +183,29 @@ class PresencialFactory(AbstractFactory):
 class Carrito():
 	boletos = []
 	def set_memento(self, carrito_memento):
-		if not carrito_memento.state:
-			return
+		#if not carrito_memento.state:
+		#	return
+
+		print("Setting boletos with ", carrito_memento.state)
 		self.boletos = carrito_memento.state.copy()
 	
 	def create_memento(self):
 		return CarritoMemento(self)
 
 class CarritoMemento():
-	state = None
+	state = []
 
-	def __init__(self, carrito):
-		self.state = carrito.boletos
+	def __init__(self, carrito=Carrito()):
+		print("Creating memento with ", carrito.boletos)
+		self.state = carrito.boletos.copy()
 
 class CarritoManager():
 	carrito = Carrito
-	carrito_memento = CarritoMemento
+	carrito_memento = CarritoMemento()
 
-	def __init__(self, carrito, carrito_memento):
+	def __init__(self, carrito):
 		self.carrito = carrito
-		self.carrito_memento = carrito_memento
+		self.carrito_memento = CarritoMemento(carrito)
 
 	def agregar(self,boleto):
 		self.carrito_memento = self.carrito.create_memento()

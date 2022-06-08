@@ -128,7 +128,7 @@ def agregar_carrito(evento_id):
 	db.session.commit()
 	db.session.add(boleto_impl)
 	if current_user.id not in carritos:
-		carritos[current_user.id] = CarritoManager(carrito=Carrito(), carrito_memento=None)
+		carritos[current_user.id] = CarritoManager(carrito=Carrito())
 
 	db.session.commit()
 	carritos[current_user.id].agregar(boleto.id)
@@ -139,7 +139,7 @@ def agregar_carrito(evento_id):
 @login_required
 def vaciar_carrito():
 	if current_user.id not in carritos:
-		carritos[current_user.id] = CarritoManager(carrito=Carrito(), carrito_memento=None)
+		carritos[current_user.id] = CarritoManager(carrito=Carrito())
 	
 	carritos[current_user.id].vaciar()
 
@@ -149,7 +149,7 @@ def vaciar_carrito():
 @login_required
 def undo_carrito():
 	if current_user.id not in carritos:
-		carritos[current_user.id] = CarritoManager(carrito=Carrito(), carrito_memento=None)
+		carritos[current_user.id] = CarritoManager(carrito=Carrito())
 	
 	carritos[current_user.id].undo()
 
@@ -160,7 +160,7 @@ def undo_carrito():
 @login_required
 def carrito():
 	if current_user.id not in carritos:
-		carritos[current_user.id] = CarritoManager(carrito=Carrito(), carrito_memento=None)
+		carritos[current_user.id] = CarritoManager(carrito=Carrito())
 	
 	boletos = []
 	for id in carritos[current_user.id].get_boletos():
