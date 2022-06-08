@@ -11,7 +11,7 @@ class RegistrationForm(FlaskForm):
 	email = StringField('Correo electrónico', validators=[DataRequired(), Email()])
 	password = PasswordField('Contraseña', validators=[DataRequired(), Length(min=1, max=25)])
 	confirm_password = PasswordField('Confirmar contraseña', validators=[DataRequired(), EqualTo('password')])
-	tipo = SelectField('Tipo', choices=[('Organizador', 'Organizador'), ('Comprador', 'Comprador'), ('Administrador', 'Administrador')])
+	tipo = SelectField('Tipo', choices=[('Organizador', 'Organizador'), ('Comprador', 'Comprador')])
 	submit = SubmitField('Registrarse')
 
 	def validate_username(self, username):

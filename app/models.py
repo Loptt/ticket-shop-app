@@ -16,13 +16,11 @@ class User(db.Model, UserMixin):
 	username = db.Column(db.String(25), unique=True, nullable=False)
 	email = db.Column(db.String(320), unique=True, nullable=False)
 	password = db.Column(db.String(25), nullable=False)
-	eventos = db.relationship('Evento', backref='creator', lazy=True)
+	# eventos = db.relationship('Evento', backref='creator', lazy=True)
 
 	@hybrid_property
 	def tipo(self):
-		if Administrador.query.filter_by(id=self.id).first():
-			return "Administrador"
-		elif Comprador.query.filter_by(id=self.id).first():
+		if Comprador.query.filter_by(id=self.id).first():
 			return "Comprador"
 		elif Organizador.query.filter_by(id=self.id).first():
 			return "Organizador"
@@ -34,12 +32,15 @@ class User(db.Model, UserMixin):
 		return boletos
 
 
-class Administrador(User):
-	id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-
 
 class Organizador(User):
 	id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+
+	@hybrid_property
+	def eventos(self):
+		eventos = [evento for evento in EventoPresencial.query.filter_by(user_id=self.id)]
+		eventos = eventos + [evento for evento in EventoVirtual.query.filter_by(user_id=self.id)]
+		return eventos
 
 
 class Comprador(User):
@@ -48,7 +49,7 @@ class Comprador(User):
 
 class Factory:
 	def makeUsuario(self, tipo, nombre, username, email, password):
-		if tipo == "Administrador" or tipo == "Organizador" or tipo == "Comprador":
+		if tipo == "Organizador" or tipo == "Comprador":
 			return eval(tipo)(username=username, email=email, password=password, nombre=nombre)
 
 

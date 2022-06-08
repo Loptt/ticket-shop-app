@@ -183,6 +183,8 @@ def mostrar_boleto(boleto_id):
 @login_required
 def profile(username):
 	user = User.query.filter_by(username=username).first_or_404()
+	user = Comprador.query.filter_by(id=user.id).first() if user.tipo == "Comprador" else Organizador.query.filter_by(id=user.id).first()
+	
 	return render_template('profile.html', user=user)
 
 
